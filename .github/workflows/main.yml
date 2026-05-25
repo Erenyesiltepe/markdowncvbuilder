@@ -1,49 +1,15 @@
-name: Generate CV PDF
-
-on:
-  push:
-    branches: [ main, master ]
-    paths:
-      - 'resume.md'      # Only trigger when resume changes
-  workflow_dispatch:     # Allows manual trigger
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install Pandoc + LaTeX
+      - name: Install Pandoc & Full LaTeX
         run: |
           sudo apt-get update
-          sudo apt-get install -y pandoc texlive-latex-base texlive-latex-recommended texlive-fonts-recommended
+          sudo apt-get install -y pandoc texlive-latex-base texlive-latex-recommended \
+                                 texlive-latex-extra texlive-xetex texlive-fonts-recommended
 
       - name: Generate PDF
         run: |
-          pandoc resume.md \
-            -o resume.pdf \
+          pandoc resume.md -o resume.pdf \
             --pdf-engine=xelatex \
             --variable=geometry:margin=1.2cm \
             --variable=mainfont:"DejaVu Sans" \
             -V colorlinks=true \
-            -V linkcolor=blue
-
-      - name: Generate HTML (bonus)
-        run: pandoc resume.md -o index.html --standalone --css style.css || echo "HTML generation skipped"
-
-      - name: Upload PDF as Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: CV-PDF
-          path: resume.pdf
-          retention-days: 90
-
-      - name: Release Latest PDF
-        uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          files: resume.pdf
-          tag_name: latest
-          name: Latest CV
+            -V linkcolor=blue \
+            --standalone
