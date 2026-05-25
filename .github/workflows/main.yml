@@ -1,4 +1,4 @@
-      - name: Install Pandoc & Full LaTeX
+- name: Install Pandoc & Full LaTeX
         run: |
           sudo apt-get update
           sudo apt-get install -y pandoc texlive-latex-base texlive-latex-recommended \
